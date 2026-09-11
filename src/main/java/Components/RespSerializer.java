@@ -1,20 +1,80 @@
 package Components;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 @Component
 public class RespSerializer{
-    public void RespSerializer(){
-        System.out.println("----------------------------------------------------------");
-
-    }
-    public String returnsString(){
-        return "hi";        
-    }
+    public int getParts(char[] dataArr, int i, String[] subArray){
+        int j=0;
+        while(i<dataArr.lenght && j<subArray.length){
+            if(dataArr[i] == '$'){
+                // bulk string
+                i++;
+                String partLength = "";
+                while(i<dataArr.lengh && Character.isDigit(dataArr[i])){
+                    partLength += dataArr[i];
+                    i++;
+                }
+                i+= 2;
+                String part = "";
+                for(int k=0;k<Integer.parseInt(partLength);k++){
+                    part += dataArr[i++];
+                }
+                i+= 2;
+                subArray[j++] = part;
+            }           
+        
+        }
+        return i;
+       
+    } 
     public List<String[]> deserialize(byte[] command){
         String data = new String(command, StandardCharsets.UTF_8);
         char[] dataArr = data.toCharArray();
         List<String[]> res = new ArrayList<>();
         return res;
+        int i = 0;
+        while(i<dataArr.length){
+            System.out.println(i);
+            char curr = dataArr[i];
+            if(curr == '*'){
+
+                // array
+                String arrlen = "";
+                i++;
+                while(i< dataArr.lengh && Character.isDigit(dataArr[i])){
+                    arrlen += dataArr[i++];
+                    
+                }
+                i+= 2;
+                if(dataArr[i] == '*'){
+                    // *2
+                    // *3\r\n#3set\r\n#3key\r\n#5value
+                    // *3\r\n#3set\r\n#3key\r\n#5value
+                    for(int t=0;t<Integer.parseInt(arrlen);t++){
+                        String nestedlen = "";
+                        i++;
+                        while(i< dataArr.lengh && Character.isDigit(dataArr[i])){
+                            nestedlen += dataArr[i++];
+                        }
+                        i+= 2;
+                        String[] subArray = new String[Integer.parseInt(nestedlen)];
+                        i = getParts(dataArr, i, subArray);
+                        res.add(subArray);
+                        }
+                     
+                    }else{
+                        // *3\r\n#3set\r\n#3key\r\n#5value
+                        string[] subArray = new String[Integer.parseInt(arrlen)];
+                        i = getParts(dataArr, i, subArray);
+                        res.add(subArray);
+                    }
+ 
+                } // skip \r\n
+            }
+        }
 
     }  
-    }
-}
+
