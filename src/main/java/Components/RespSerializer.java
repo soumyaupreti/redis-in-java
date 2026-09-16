@@ -42,7 +42,50 @@ public class RespSerializer{
         return res;
         int i = 0;
         while(i<dataArr.length){
-            System.out.println(i);
+            char curr = dataArr[i];
+
+            if(curr=='\u0000'){
+                System.out.println("===========================================================")
+                System.out.println(i);
+                System.out.println(curr);
+                System.out.println(i);
+                System.out.println(dataArr.length);
+                break;  
+            }
+            if(curr == '*'){
+                // array
+                String arrlen = "";
+                i++;
+                while(i< dataArr.lengh && Character.isDigit(dataArr[i])){
+                    arrlen += dataArr[i++];
+                    
+                }
+                i+= 2;
+                if(dataArr[i] == '*'){
+                    // *2
+                    // *3\r\n#3set\r\n#3key\r\n#5value
+                    // *3\r\n#3set\r\n#3key\r\n#5value
+                    for(int t=0;t<Integer.parseInt(arrlen);t++){
+                        String nestedlen = "";
+                        i++;
+                        while(i< dataArr.lengh && Character.isDigit(dataArr[i])){
+                            nestedlen += dataArr[i++];
+                        }
+                        i+= 2;
+                        String[] subArray = new String[Integer.parseInt(nestedlen)];
+                        i = getParts(dataArr, i, subArray);
+                        res.add(subArray);
+                        }
+                     
+                    }else{
+                        // *3\r\n#3set\r\n#3key\r\n#5value
+                        string[] subArray = new String[Integer.parseInt(arrlen)];
+                        i = getParts(dataArr, i, subArray);
+                        res.add(subArray);
+                    }
+ 
+                } // skip \r\n
+            }
             char curr = dataArr[i];
             if(curr == '*'){
 
