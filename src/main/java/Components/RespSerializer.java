@@ -31,6 +31,7 @@ public class RespSerializer{
        
     } 
     public List<String[]> deserialize(byte[] command){
+        try{
         System.out.println("control reached here x 2");
         System.out.println(command);
         String data = new String(command, StandardCharsets.UTF_8);
@@ -78,6 +79,9 @@ public class RespSerializer{
  
                 } // skip \r\n
             }
+            return res;}
+        catch(Exception e){
+            System.out.println(e.getMessage());
         }
 
     }  
